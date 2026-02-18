@@ -12,7 +12,6 @@ import ReactMarkdown from 'react-markdown';
 // Components
 import NewsCard from '../components/NewsCard';
 import { NewsCardSkeleton } from '../components/Skeleton';
-import BreakingBanner from '../components/BreakingBanner';
 import ArticleModal from '../components/ArticleModal';
 
 // Types & Services
@@ -103,6 +102,8 @@ const Home = () => {
 
           if (currentCategory === 'Originals') {
             adminNews = mappedOriginals;
+            // FIX: Originals are currently fetched all at once (page 1), so disable further loading loops
+            setHasMore(false);
           } else if (currentCategory) {
             adminNews = mappedOriginals.filter(n => n.category === currentCategory);
           } else {
@@ -224,7 +225,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 font-sans transition-colors duration-300">
-      <BreakingBanner headlines={breakingNews} />
 
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm sticky top-0 z-40 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
