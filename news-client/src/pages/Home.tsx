@@ -43,6 +43,9 @@ const Home = () => {
   const [hasMore, setHasMore] = useState(true);
   const [isMoreLoading, setIsMoreLoading] = useState(false);
 
+  // Ref to prevent double-fetching in React Strict Mode or rapid clicks
+  const isFetchingRef = React.useRef(false);
+
   // ---/ Effects /---
   // Fetch news when category changes
   useEffect(() => {
@@ -62,11 +65,15 @@ const Home = () => {
    * Merges them into a single timeline.
    */
   const fetchHybridFeed = async (reset = false) => {
+    // Prevent multiple simultaneous fetches
+    if (isFetchingRef.current) return;
+
+    isFetchingRef.current = true;
     const currentPage = reset ? 1 : page;
 
     if (reset) {
       setLoading(true);
-      setNews([]);
+      setNews([]); // Clear current news immediately on reset
       setAiSummary(null);
       setPage(1);
       setHasMore(true);
@@ -77,78 +84,104 @@ const Home = () => {
     try {
       // 1. Fetch Admin/Original News via API
       let adminNews: NewsItem[] = [];
-      // Only fetch originals on first page to avoid dupes/complexity for now
+      // Only fetch originals on first page to avoid dupes/complexity
       if (currentPage === 1) {
-        const originals = await api.getOriginalNews();
+        try {
+          const originals = await api.getOriginalNews();
 
-        if (originals && Array.isArray(originals)) {
-          const mappedOriginals = originals.map((item: any) => ({
-            id: item.id,
-            title: item.title,
-            summary: item.summary,
-            content: item.content,
-            category: item.category,
-            tags: item.tags || [],
-            imageUrl: item.image_url,
-            videoUrl: item.video_url,
-            source: item.source || 'Gathered Original',
-            url: item.source_url,
-            author: item.author,
-            publishedAt: item.published_at,
-            isBreaking: item.is_breaking,
-            isFeatured: item.is_featured,
-            isAiGenerated: item.is_ai_generated,
-          }));
+          if (originals && Array.isArray(originals)) {
+            const mappedOriginals = originals.map((item: any) => ({
+              id: item.id,
+              title: item.title,
+              summary: item.summary,
+              content: item.content,
+              category: item.category,
+              tags: item.tags || [],
+              imageUrl: item.image_url,
+              videoUrl: item.video_url,
+              source: item.source || 'Gathered Original',
+              url: item.source_url,
+              author: item.author,
+              publishedAt: item.published_at,
+              isBreaking: item.is_breaking,
+              isFeatured: item.is_featured,
+              isAiGenerated: item.is_ai_generated,
+            }));
 
-          if (currentCategory === 'Originals') {
-            adminNews = mappedOriginals;
-            // FIX: Originals are currently fetched all at once (page 1), so disable further loading loops
-            setHasMore(false);
-          } else if (currentCategory) {
-            adminNews = mappedOriginals.filter(n => n.category === currentCategory);
-          } else {
-            adminNews = mappedOriginals;
+            if (currentCategory === 'Originals') {
+              adminNews = mappedOriginals;
+              // Originals are fetched all at once
+              setHasMore(false);
+            } else if (currentCategory) {
+              adminNews = mappedOriginals.filter(n => n.category === currentCategory);
+            } else {
+              adminNews = mappedOriginals;
+            }
           }
+        } catch (error) {
+          console.error("Failed to fetch originals", error);
         }
       }
 
       // 2. Fetch Live RSS Feeds (Paginated)
       let liveNews: NewsItem[] = [];
+      let newHasMore = false;
+
       if (currentCategory !== 'Originals') {
-        const liveResult = await api.getLiveFeed(currentCategory || undefined, currentPage);
+        try {
+          const liveResult = await api.getLiveFeed(currentCategory || undefined, currentPage);
 
-        if (liveResult.articles && Array.isArray(liveResult.articles)) {
-          liveNews = liveResult.articles.map((item: any, idx: number) => ({
-            id: `rss-${currentPage}-${idx}-${Date.now()}`,
-            title: item.title,
-            summary: item.summary && item.summary.length > 0 ? item.summary : ['Read full story at source.'],
-            content: 'Full coverage available at source link.',
-            category: (item.category as Category) || currentCategory || 'World',
-            tags: ['RSS', 'Live'],
-            imageUrl: item.imageUrl || `https://placehold.co/800x600/1e293b/FFFFFF/png?text=${encodeURIComponent(item.source || 'News')}`,
-            source: item.source || 'Web Feed',
-            url: item.link,
-            publishedAt: item.pubDate || new Date().toISOString(),
-            author: 'Aggregator',
-            isBreaking: idx < 2 && currentPage === 1,
-            isFeatured: idx < 5 && currentPage === 1,
-            isAiGenerated: false
-          }));
+          if (liveResult.articles && Array.isArray(liveResult.articles)) {
+            // Only consider it "having more" if we actually got a full page worth of results (e.g. > 0)
+            newHasMore = liveResult.articles.length > 0;
+            if (liveResult.hasMore !== undefined) newHasMore = liveResult.hasMore;
 
-          setHasMore(liveResult.hasMore !== undefined ? liveResult.hasMore : (liveNews.length > 0));
-        } else {
-          setHasMore(false);
+            liveNews = liveResult.articles.map((item: any, idx: number) => ({
+              id: `rss-${currentPage}-${idx}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Truly unique ID
+              title: item.title,
+              summary: item.summary && item.summary.length > 0 ? item.summary : ['Read full story at source.'],
+              content: 'Full coverage available at source link.',
+              category: (item.category as Category) || currentCategory || 'World',
+              tags: ['RSS', 'Live'],
+              imageUrl: item.imageUrl || `https://placehold.co/800x600/1e293b/FFFFFF/png?text=${encodeURIComponent(item.source || 'News')}`,
+              source: item.source || 'Web Feed',
+              url: item.link,
+              publishedAt: item.pubDate || new Date().toISOString(),
+              author: 'Aggregator',
+              isBreaking: idx < 2 && currentPage === 1,
+              isFeatured: idx < 5 && currentPage === 1,
+              isAiGenerated: false
+            }));
+          }
+        } catch (error) {
+          console.warn("Failed to fetch live feed", error);
+          // Don't set hasMore to false on error, allow retry
+          newHasMore = true;
         }
+      }
+
+      // If we are in Originals mode, hasMore is handled above. 
+      // Otherwise update based on RSS result.
+      if (currentCategory !== 'Originals') {
+        setHasMore(newHasMore);
       }
 
       // 3. Merge & Sort
       const combined = [...adminNews, ...liveNews];
-      // Note: We append if not reset
+
       setNews(prev => {
         const updated = reset ? combined : [...prev, ...combined];
-        // Deduplicate
-        const unique = Array.from(new Map(updated.map(item => [item.url || item.id, item])).values());
-        // Sort
+        // Robust Deduplication: Use URL as primary key, fallback to Title if URL missing
+        const uniqueMap = new Map();
+        updated.forEach(item => {
+          const key = item.url || item.title;
+          if (!uniqueMap.has(key)) {
+            uniqueMap.set(key, item);
+          }
+        });
+
+        const unique = Array.from(uniqueMap.values());
+        // Sort by date descending
         unique.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
         return unique;
       });
@@ -158,6 +191,7 @@ const Home = () => {
     } finally {
       setLoading(false);
       setIsMoreLoading(false);
+      isFetchingRef.current = false;
     }
   };
 
