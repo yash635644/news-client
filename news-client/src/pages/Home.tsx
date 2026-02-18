@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Filter, Search, TrendingUp, Globe, Newspaper, Zap, CheckCircle2, RefreshCw, Layers, Sparkles, X, Heart, Mail, Loader2, Rss, Flame } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import SEO from '../components/SEO';
 
 // Components
 import NewsCard from '../components/NewsCard';
@@ -257,9 +258,7 @@ const Home = () => {
     return !effectiveFeatured.find(f => f.id === n.id);
   });
 
-  import SEO from '../components/SEO';
 
-  // ...
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 font-sans transition-colors duration-300">
