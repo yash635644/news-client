@@ -5,7 +5,16 @@
  */
 import { HelmetProvider } from 'react-helmet-async';
 
-// ... other imports ...
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import Navbar from './components/Navbar';
+import Ticker from './components/Ticker';
+import Home from './pages/Home';
+import Subscribe from './pages/Subscribe';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Disclaimer from './pages/Disclaimer';
 import ArticlePage from './pages/ArticlePage';
 
 const App = () => {
