@@ -257,8 +257,16 @@ const Home = () => {
     return !effectiveFeatured.find(f => f.id === n.id);
   });
 
+  import SEO from '../components/SEO';
+
+  // ...
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 font-sans transition-colors duration-300">
+      <SEO
+        title={currentCategory ? `${currentCategory} News` : 'Gathered - AI News Aggregator'}
+        description="The world's first fully AI-powered autonomous news aggregator."
+      />
 
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm sticky top-0 z-40 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
