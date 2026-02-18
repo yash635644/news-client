@@ -26,8 +26,8 @@ const App = () => {
               <Route path="/disclaimer" element={<Disclaimer />} />
             </Routes>
           </main>
-// ... footer continues
 
+          {/* Footer content... */}
           <footer className="bg-gray-900 text-white border-t border-gray-800 pt-16 pb-8">
             <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
 
@@ -92,10 +92,9 @@ const App = () => {
             </div>
           </footer>
         </div>
-
-
       </Router>
-      );
+    </HelmetProvider>
+  );
 };
 
-      export default App;
+export default App;
