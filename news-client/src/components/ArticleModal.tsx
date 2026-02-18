@@ -10,15 +10,18 @@ interface Props {
 }
 
 const ArticleModal: React.FC<Props> = ({ article, isOpen, onClose }) => {
-    if (!isOpen || !article) return null;
-
     // Prevent background scrolling when modal is open
+    // MOVED UP: Hooks must always run unconditionally
     React.useEffect(() => {
-        document.body.style.overflow = 'hidden';
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        }
         return () => {
             document.body.style.overflow = 'unset';
         };
     }, [isOpen]);
+
+    if (!isOpen || !article) return null;
 
     const handleShare = async () => {
         if (navigator.share) {
