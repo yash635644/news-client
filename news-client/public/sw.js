@@ -1,4 +1,4 @@
-const CACHE_NAME = "gathered-news-v1";
+const CACHE_NAME = "gathered-news-v2";
 const urlsToCache = [
     "/",
     "/index.html"
