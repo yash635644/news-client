@@ -13,6 +13,7 @@ import ReactMarkdown from 'react-markdown';
 import NewsCard from '../components/NewsCard';
 import { NewsCardSkeleton } from '../components/Skeleton';
 import BreakingBanner from '../components/BreakingBanner';
+import ArticleModal from '../components/ArticleModal';
 
 // Types & Services
 import { NewsItem, Category } from '../types';
@@ -33,6 +34,10 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showTrendingOnly, setShowTrendingOnly] = useState(false);
   const [aiSummary, setAiSummary] = useState<string | null>(null);
+
+  // Modal State
+  const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Pagination
   const [page, setPage] = useState(1);
@@ -197,6 +202,11 @@ const Home = () => {
     }
   };
 
+  const handleArticleClick = (article: NewsItem) => {
+    setSelectedArticle(article);
+    setIsModalOpen(true);
+  };
+
   // ---/ Render Helpers /---
   const breakingNews = news.filter(n => n.isBreaking).map(n => `${n.source ? `[${n.source}] ` : ''}${n.title}`);
   const featuredNews = news.filter(n => n.isFeatured).slice(0, 3);
@@ -328,12 +338,12 @@ const Home = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   <div className="lg:col-span-2 h-full">
-                    <NewsCard news={effectiveFeatured[0]} featured={true} />
+                    <NewsCard news={effectiveFeatured[0]} featured={true} onClick={handleArticleClick} />
                   </div>
                   <div className="flex flex-col gap-6">
                     {effectiveFeatured.slice(1, 3).map(item => (
                       <div key={item.id} className="flex-1">
-                        <NewsCard news={item} />
+                        <NewsCard news={item} onClick={handleArticleClick} />
                       </div>
                     ))}
                   </div>
@@ -387,7 +397,7 @@ const Home = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-10">
                 {regularNews.map(item => (
-                  <NewsCard key={item.id} news={item} />
+                  <NewsCard key={item.id} news={item} onClick={handleArticleClick} />
                 ))}
               </div>
             )}
@@ -447,6 +457,12 @@ const Home = () => {
                 </p>
               </div>
             </div>
+
+            <ArticleModal
+              article={selectedArticle}
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+            />
           </>
         )}
       </div>
