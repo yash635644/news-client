@@ -6,14 +6,15 @@ import { NewsItem } from '../types';
 interface Props {
   news: NewsItem;
   featured?: boolean;
+  onClick?: (news: NewsItem) => void;
 }
 
-const NewsCard: React.FC<Props> = ({ news, featured = false }) => {
+const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
+  // ... existing state ...
   const [imgSrc, setImgSrc] = useState(news.imageUrl);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // Reset state when news prop changes (e.g. filtering)
   useEffect(() => {
     setImgSrc(news.imageUrl);
     setIsLoading(true);
@@ -24,7 +25,6 @@ const NewsCard: React.FC<Props> = ({ news, featured = false }) => {
     if (!hasError) {
       setHasError(true);
       setIsLoading(false);
-      // Fallback to a clean placeholder service with specific category color/text
       setImgSrc(`https://placehold.co/800x600/1e293b/FFFFFF/png?text=${encodeURIComponent(news.category || 'News')}`);
     }
   };
@@ -33,25 +33,29 @@ const NewsCard: React.FC<Props> = ({ news, featured = false }) => {
     setIsLoading(false);
   };
 
-  // Safe Date Formatting
   const getFormattedDate = (dateString: string) => {
     try {
       const date = parseISO(dateString);
       if (isValid(date)) {
         return formatDistanceToNow(date) + ' ago';
       }
-      // Fallback if parsing fails (e.g. if AI sends "2 hours ago" directly)
       return 'Just now';
     } catch (e) {
       return 'Recently';
     }
   };
 
+  // Determine if this is an internal article that should open in a modal
+  const isInternal = !news.url || news.source === 'Gathered Original' || news.category === 'Originals';
+
   return (
     <div className={`group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-gray-700 flex flex-col h-full ${featured ? 'md:col-span-2 lg:col-span-2 md:flex-row' : ''}`}>
 
       {/* Image Section */}
-      <div className={`relative overflow-hidden bg-gray-200 dark:bg-gray-700 ${featured ? 'md:w-1/2 h-64 md:h-auto' : 'h-56'}`}>
+      <div
+        className={`relative overflow-hidden bg-gray-200 dark:bg-gray-700 cursor-pointer ${featured ? 'md:w-1/2 h-64 md:h-auto' : 'h-56'}`}
+        onClick={() => isInternal && onClick && onClick(news)}
+      >
 
         {/* Loading Skeleton */}
         {isLoading && (
@@ -93,7 +97,7 @@ const NewsCard: React.FC<Props> = ({ news, featured = false }) => {
           </div>
         )}
 
-        {/* Source Logo Overlay (Bottom Left of Image) */}
+        {/* Source Logo Overlay */}
         {news.source && (
           <div className="absolute bottom-3 left-4 z-20 flex items-center gap-2">
             {news.sourceLogo ? (
@@ -124,16 +128,12 @@ const NewsCard: React.FC<Props> = ({ news, featured = false }) => {
                     await navigator.share({
                       title: news.title,
                       text: news.summary[0] || news.title,
-                      url: news.url
+                      url: news.url || window.location.href
                     });
                   } catch (err) { console.error('Share failed', err); }
                 } else {
                   try {
-                    await navigator.clipboard.writeText(news.url);
-                    // We need a way to notify user. Since toast is not passed here, 
-                    // we might need to add it or just rely on UI feedback.
-                    // For now, let's just log or change icon temporarily if complex.
-                    // Actually, simple alert or console is fallback.
+                    await navigator.clipboard.writeText(news.url || window.location.href);
                     alert('Link copied to clipboard!');
                   } catch (err) { console.error('Copy failed', err); }
                 }
@@ -146,7 +146,10 @@ const NewsCard: React.FC<Props> = ({ news, featured = false }) => {
           </div>
         </div>
 
-        <h3 className={`font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
+        <h3
+          className={`font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}
+          onClick={() => isInternal && onClick && onClick(news)}
+        >
           {news.title}
         </h3>
 
@@ -170,15 +173,25 @@ const NewsCard: React.FC<Props> = ({ news, featured = false }) => {
             ))}
           </div>
 
-          <a
-            href={news.url || '#'}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group/btn pl-4 flex items-center gap-1 text-xs font-bold text-gray-900 dark:text-white hover:text-brand-600 transition-colors whitespace-nowrap"
-          >
-            Read More
-            <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-          </a>
+          {isInternal ? (
+            <button
+              onClick={() => onClick && onClick(news)}
+              className="group/btn pl-4 flex items-center gap-1 text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-800 transition-colors whitespace-nowrap"
+            >
+              Read Full Story
+              <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+            </button>
+          ) : (
+            <a
+              href={news.url || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/btn pl-4 flex items-center gap-1 text-xs font-bold text-gray-900 dark:text-white hover:text-brand-600 transition-colors whitespace-nowrap"
+            >
+              Read More
+              <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
+            </a>
+          )}
         </div>
       </div>
     </div>
