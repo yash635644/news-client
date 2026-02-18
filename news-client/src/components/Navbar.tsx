@@ -40,11 +40,8 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
 
-          {/* Logo Section */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="bg-black dark:bg-white text-white dark:text-black p-2.5 rounded-none transform group-hover:-rotate-3 transition-transform duration-300">
-              <Globe size={28} strokeWidth={2.5} />
-            </div>
+            <img src="/logo.png" alt="Gathered Logo" className="h-10 w-10 object-contain group-hover:-rotate-3 transition-transform duration-300" />
             <div className="flex flex-col -space-y-1">
               <span className="text-2xl font-black font-serif tracking-tighter text-gray-900 dark:text-white leading-none">
                 GATH<span className="text-brand-600">ERED</span>
