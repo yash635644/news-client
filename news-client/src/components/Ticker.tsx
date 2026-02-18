@@ -8,17 +8,36 @@ const Ticker = () => {
 
     useEffect(() => {
         const fetchBreaking = async () => {
+            let breaking: any[] = [];
+
             try {
+                // 1. Try to fetch Original Breaking News
                 const news = await api.getOriginalNews();
-                // Filter for breaking news. 
-                // Note: 'is_breaking' might be the DB field name, check if API normalizes it.
-                const breaking = news.filter((item: any) => item.is_breaking || item.isBreaking);
-                setBreakingNews(breaking);
+                if (news && Array.isArray(news)) {
+                    breaking = news.filter((item: any) => item.is_breaking || item.isBreaking);
+                }
             } catch (e) {
-                console.error("Failed to fetch ticker news");
-            } finally {
-                setLoading(false);
+                console.warn("Failed to fetch original ticker news, trying fallback...");
             }
+
+            // 2. Fallback: If no original breaking news (or fetch failed), fetch RSS
+            if (breaking.length === 0) {
+                try {
+                    const liveFeed = await api.getLiveFeed('World'); // Default to World news
+                    if (liveFeed && liveFeed.articles && Array.isArray(liveFeed.articles)) {
+                        breaking = liveFeed.articles.slice(0, 10).map((item: any) => ({
+                            id: item.url || item.id,
+                            title: item.title,
+                            isBreaking: true
+                        }));
+                    }
+                } catch (fallbackError) {
+                    console.error("Fallback RSS fetch failed", fallbackError);
+                }
+            }
+
+            setBreakingNews(breaking);
+            setLoading(false);
         };
 
         fetchBreaking();
@@ -27,7 +46,8 @@ const Ticker = () => {
         return () => clearInterval(interval);
     }, []);
 
-    if (loading || breakingNews.length === 0) return null;
+    // Don't render if absolutely no news found even after fallback
+    if (!loading && breakingNews.length === 0) return null;
 
     return (
         <div className="bg-red-600 text-white text-sm font-bold overflow-hidden h-10 flex items-center relative z-50">
