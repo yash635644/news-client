@@ -325,5 +325,22 @@ export const api = {
       }
     }
     return [];
+  },
+
+  /**
+   * Fetches a single Original News article by ID.
+   */
+  getNewsById: async (id: string) => {
+    if (API_URL) {
+      try {
+        const res = await fetch(`${API_URL}/api/news/${id}`);
+        if (!res.ok) throw new Error('Failed to fetch article');
+        return await res.json();
+      } catch (e) {
+        console.error("Failed to fetch article", e);
+        return null;
+      }
+    }
+    return null;
   }
 };
