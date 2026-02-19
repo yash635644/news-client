@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Share2, Sparkles, Flame, ArrowUpRight, Image as ImageIcon } from 'lucide-react';
+import { Clock, Share2, Sparkles, Flame, ArrowUpRight, Image as ImageIcon, Volume2, StopCircle } from 'lucide-react';
 import { formatDistanceToNow, isValid, parseISO } from 'date-fns';
 import { NewsItem } from '../types';
 
@@ -103,20 +103,24 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
 
-        {/* LISTEN BUTTON (TTS) */}
+        {/* LISTEN BUTTON (TTS) - Enhanced UI */}
         <button
           onClick={handleSpeak}
-          className="absolute top-4 right-4 z-30 p-2 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/40 text-white transition-all shadow-lg border border-white/10"
+          className={`absolute top-4 right-4 z-30 p-2.5 rounded-full backdrop-blur-md transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.2)] border border-white/20 group/audio
+            ${isSpeaking
+              ? "bg-brand-600/90 text-white ring-2 ring-white/30"
+              : "bg-black/30 text-white hover:bg-black/50 hover:scale-110"
+            }`}
           title={isSpeaking ? "Stop listening" : "Listen to article"}
         >
           {isSpeaking ? (
-            <div className="flex gap-1 items-center px-1">
-              <span className="w-1 h-3 bg-white rounded-full animate-[bounce_1s_infinite]"></span>
-              <span className="w-1 h-3 bg-white rounded-full animate-[bounce_1s_infinite_0.2s]"></span>
-              <span className="w-1 h-3 bg-white rounded-full animate-[bounce_1s_infinite_0.4s]"></span>
+            <div className="flex items-center justify-center w-5 h-5 relative">
+              {/* Waveform Animation */}
+              <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping"></span>
+              <StopCircle size={20} className="relative z-10 fill-white text-brand-600" />
             </div>
           ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 0 0 1 0 14.14"></path></svg>
+            <Volume2 size={20} className="transition-transform group-hover/audio:scale-110" />
           )}
         </button>
 
