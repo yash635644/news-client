@@ -45,6 +45,32 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
     }
   };
 
+  // Speech Synthesis State
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const handleSpeak = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(`${news.title}. ${news.summary.join('. ')}`);
+    utterance.lang = 'en-US';
+    utterance.rate = 1;
+    utterance.pitch = 1;
+
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    window.speechSynthesis.cancel(); // Clear any previous
+    window.speechSynthesis.speak(utterance);
+    setIsSpeaking(true);
+  };
+
   // Determine if this is an internal article that should open in a modal
   const isInternal = !news.url || news.source === 'Gathered Original' || news.category === 'Originals';
 
@@ -77,6 +103,23 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
 
+        {/* LISTEN BUTTON (TTS) */}
+        <button
+          onClick={handleSpeak}
+          className="absolute top-4 right-4 z-30 p-2 rounded-full bg-white/20 backdrop-blur-md hover:bg-white/40 text-white transition-all shadow-lg border border-white/10"
+          title={isSpeaking ? "Stop listening" : "Listen to article"}
+        >
+          {isSpeaking ? (
+            <div className="flex gap-1 items-center px-1">
+              <span className="w-1 h-3 bg-white rounded-full animate-[bounce_1s_infinite]"></span>
+              <span className="w-1 h-3 bg-white rounded-full animate-[bounce_1s_infinite_0.2s]"></span>
+              <span className="w-1 h-3 bg-white rounded-full animate-[bounce_1s_infinite_0.4s]"></span>
+            </div>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 0 0 1 0 14.14"></path></svg>
+          )}
+        </button>
+
         {/* Top Badges */}
         <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-20">
           {news.isBreaking && (
@@ -91,7 +134,7 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
 
         {/* AI Badge */}
         {news.isAiGenerated && (
-          <div className="absolute top-4 right-4 z-20">
+          <div className="absolute bottom-16 right-4 z-20">
             <div className="px-2 py-1 rounded-lg bg-black/40 backdrop-blur-md flex items-center gap-1 border border-white/10">
               <Sparkles size={12} className="text-brand-400" />
               <span className="text-[10px] font-medium text-white">Live AI</span>
