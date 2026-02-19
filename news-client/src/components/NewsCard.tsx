@@ -71,6 +71,8 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
           onLoad={handleImageLoad}
           className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}
           loading="lazy"
+          decoding="async"
+          referrerPolicy="no-referrer"
         />
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
