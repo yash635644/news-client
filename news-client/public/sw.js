@@ -1,10 +1,11 @@
-const CACHE_NAME = "gathered-news-v2";
+const CACHE_NAME = "gathered-news-v3";
 const urlsToCache = [
     "/",
     "/index.html"
 ];
 
 self.addEventListener("install", (event) => {
+    self.skipWaiting(); // Force activation
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll(urlsToCache);
