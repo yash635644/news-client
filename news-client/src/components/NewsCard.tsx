@@ -202,11 +202,15 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
         </h3>
 
         <div className="mb-6 flex-grow">
-          {news.summary.slice(0, 1).map((point, i) => (
+          {Array.isArray(news.summary) ? news.summary.slice(0, 1).map((point, i) => (
             <p key={i} className={`text-gray-600 dark:text-gray-300 leading-relaxed ${featured ? 'text-base line-clamp-4' : 'text-sm line-clamp-3'}`}>
               {point}
             </p>
-          ))}
+          )) : (
+            <p className={`text-gray-600 dark:text-gray-300 leading-relaxed ${featured ? 'text-base line-clamp-4' : 'text-sm line-clamp-3'}`}>
+              {news.summary || 'Read the full story at the source to learn more.'}
+            </p>
+          )}
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
