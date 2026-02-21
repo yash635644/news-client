@@ -63,6 +63,7 @@ const App = () => {
               <div>
                 <h4 className="font-bold uppercase tracking-wider mb-4 text-gray-500 text-xs">Categories</h4>
                 <ul className="space-y-2 text-sm text-gray-300">
+                  <li><Link to="/?category=Originals" className="hover:text-white transition-colors">Originals</Link></li>
                   <li><Link to="/?category=India" className="hover:text-white transition-colors">India</Link></li>
                   <li><Link to="/?category=World" className="hover:text-white transition-colors">World</Link></li>
                   <li><Link to="/?category=Tech" className="hover:text-white transition-colors">Technology</Link></li>
@@ -97,14 +98,17 @@ const App = () => {
               <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left">
                 <p>&copy; {new Date().getFullYear()} Gathered Inc. All rights reserved.</p>
                 <span className="hidden md:inline text-gray-700">|</span>
-                <a
-                  href="https://yash635644.github.io/yash-portfolio/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-brand-400 transition-colors font-medium"
-                >
-                  Designed & Developed by Yash Trivedi
-                </a>
+                <p className="text-gray-400">
+                  Designed & Developed by{' '}
+                  <a
+                    href="https://yash635644.github.io/yash-portfolio/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white hover:text-brand-400 transition-colors font-bold"
+                  >
+                    Yash Trivedi
+                  </a>
+                </p>
               </div>
               <div className="flex gap-4 mt-4 md:mt-0">
                 {/* Admin login removed for client app */}
