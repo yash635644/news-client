@@ -8,6 +8,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
+import { ExternalLink } from 'lucide-react';
 import Navbar from './components/Navbar';
 import Ticker from './components/Ticker';
 
@@ -104,9 +105,10 @@ const App = () => {
                     href="https://yash635644.github.io/yash-portfolio/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-white hover:text-brand-400 transition-colors font-bold"
+                    className="text-white hover:text-brand-400 transition-colors font-bold inline-flex items-center gap-1 group"
                   >
                     Yash Trivedi
+                    <ExternalLink size={14} className="group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
                   </a>
                 </p>
               </div>
