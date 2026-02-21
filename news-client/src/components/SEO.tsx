@@ -18,6 +18,21 @@ const SEO: React.FC<SEOProps> = ({
 }) => {
     const siteTitle = title === 'Gathered - AI News Aggregator' ? title : `${title} | Gathered`;
 
+    // JSON-LD Structured Data for Google News Carousel
+    const jsonLd = type === 'article' ? {
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "headline": title,
+        "image": [image],
+        "datePublished": new Date().toISOString(),
+        "dateModified": new Date().toISOString(),
+        "author": [{
+            "@type": "Organization",
+            "name": "Gathered News",
+            "url": "https://gathered-news.pages.dev"
+        }]
+    } : null;
+
     return (
         <Helmet>
             {/* Standard Metadata */}
@@ -38,6 +53,13 @@ const SEO: React.FC<SEOProps> = ({
             <meta name="twitter:title" content={siteTitle} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={image} />
+
+            {/* Structured Data */}
+            {jsonLd && (
+                <script type="application/ld+json">
+                    {JSON.stringify(jsonLd)}
+                </script>
+            )}
         </Helmet>
     );
 };
