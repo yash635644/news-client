@@ -5,17 +5,26 @@
  */
 import { HelmetProvider } from 'react-helmet-async';
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Ticker from './components/Ticker';
-import Home from './pages/Home';
-import Subscribe from './pages/Subscribe';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import Disclaimer from './pages/Disclaimer';
-import ArticlePage from './pages/ArticlePage';
+
+// Lazy load pages for performance
+const Home = lazy(() => import('./pages/Home'));
+const Subscribe = lazy(() => import('./pages/Subscribe'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Disclaimer = lazy(() => import('./pages/Disclaimer'));
+const ArticlePage = lazy(() => import('./pages/ArticlePage'));
+
+// Fallback loader while downloading bundles
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+    <div className="w-12 h-12 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 const App = () => {
   return (
@@ -26,14 +35,16 @@ const App = () => {
           <Ticker />
           <Navbar />
           <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/news/:id" element={<ArticlePage />} />
-              <Route path="/subscribe" element={<Subscribe />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/disclaimer" element={<Disclaimer />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/news/:id" element={<ArticlePage />} />
+                <Route path="/subscribe" element={<Subscribe />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/disclaimer" element={<Disclaimer />} />
+              </Routes>
+            </Suspense>
           </main>
 
           {/* Footer content... */}
