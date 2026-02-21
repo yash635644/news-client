@@ -21,18 +21,6 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
     setHasError(false);
   }, [news.imageUrl]);
 
-  const handleImageError = () => {
-    if (!hasError) {
-      setHasError(true);
-      setIsLoading(false);
-      setImgSrc(`https://placehold.co/800x600/1e293b/FFFFFF/png?text=${encodeURIComponent(news.category || 'News')}`);
-    }
-  };
-
-  const handleImageLoad = () => {
-    setIsLoading(false);
-  };
-
   const getFormattedDate = (dateString: string) => {
     try {
       const date = parseISO(dateString);
@@ -84,24 +72,35 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
       >
 
         {/* Loading Skeleton */}
-        {isLoading && (
+        {isLoading && !hasError && imgSrc && (
           <div className="absolute inset-0 bg-gray-300 dark:bg-gray-600 animate-pulse flex items-center justify-center z-10">
             <ImageIcon className="text-gray-400 opacity-50" size={32} />
           </div>
         )}
 
-        <img
-          src={imgSrc || `https://placehold.co/800x600/1e293b/FFFFFF/png?text=${encodeURIComponent(news.category || 'News')}`}
-          alt={news.title}
-          onError={handleImageError}
-          onLoad={handleImageLoad}
-          className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-          loading="lazy"
-          decoding="async"
-          referrerPolicy="no-referrer"
-        />
+        {hasError || !imgSrc ? (
+          <div className="w-full h-full bg-gradient-to-br from-brand-700 to-gray-900 flex items-center justify-center">
+            <span className="text-white/80 font-serif font-black text-3xl md:text-4xl tracking-widest uppercase">
+              {news.category || 'Gathered'}
+            </span>
+          </div>
+        ) : (
+          <img
+            src={imgSrc}
+            alt={news.title}
+            onError={() => {
+              setHasError(true);
+              setIsLoading(false);
+            }}
+            onLoad={() => setIsLoading(false)}
+            className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+            loading="lazy"
+            decoding="async"
+            referrerPolicy="no-referrer"
+          />
+        )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
 
         {/* LISTEN BUTTON (TTS) - Enhanced UI */}
         <button
