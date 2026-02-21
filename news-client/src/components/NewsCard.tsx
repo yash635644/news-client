@@ -201,14 +201,11 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
           {news.title}
         </h3>
 
-        <div className="space-y-2 mb-6 flex-grow">
-          {news.summary.slice(0, featured ? 3 : 2).map((point, i) => (
-            <div key={i} className="flex gap-3">
-              <div className="min-w-[4px] h-[4px] rounded-full bg-brand-500 mt-2.5"></div>
-              <p className={`text-gray-600 dark:text-gray-300 leading-relaxed ${featured ? 'text-base' : 'text-sm line-clamp-2'}`}>
-                {point}
-              </p>
-            </div>
+        <div className="mb-6 flex-grow">
+          {news.summary.slice(0, 1).map((point, i) => (
+            <p key={i} className={`text-gray-600 dark:text-gray-300 leading-relaxed ${featured ? 'text-base line-clamp-4' : 'text-sm line-clamp-3'}`}>
+              {point}
+            </p>
           ))}
         </div>
 
@@ -224,7 +221,7 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
           {isInternal ? (
             <button
               onClick={() => onClick && onClick(news)}
-              className="group/btn pl-4 flex items-center gap-1 text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-800 transition-colors whitespace-nowrap"
+              className="group/btn pl-4 flex items-center gap-1 text-[11px] md:text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-800 transition-colors whitespace-nowrap"
             >
               Read Full Story
               <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
@@ -234,9 +231,9 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
               href={news.url || '#'}
               target="_blank"
               rel="noopener noreferrer"
-              className="group/btn pl-4 flex items-center gap-1 text-xs font-bold text-gray-900 dark:text-white hover:text-brand-600 transition-colors whitespace-nowrap"
+              className="group/btn pl-4 flex items-center gap-1 text-[11px] md:text-xs font-bold text-gray-900 dark:text-white hover:text-brand-600 transition-colors whitespace-nowrap"
             >
-              Read More
+              Read full news at source
               <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
             </a>
           )}
