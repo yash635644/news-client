@@ -234,7 +234,7 @@ const Home = () => {
       console.error("Search failed", error);
       setNews([]);
     } finally {
-      setLoading(false);
+      setTimeout(() => setLoading(false), 300); // Give a tiny delay for visual smoothness when switching 
     }
   };
 
