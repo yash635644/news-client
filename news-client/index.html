@@ -6,53 +6,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gathered - Global AI News Aggregator</title>
   <meta name="description"
-    content="Gathered is a production-ready, AI-powered news aggregator delivering unbiased, real-time updates from over 5,000 verified global sources." />
-  <script src="https://cdn.tailwindcss.com"></script>
+    content="Gathered is a verified, real-time AI news aggregator delivering global updates across World, Tech, India, and more." />
+  <meta name="keywords" content="AI news, news aggregator, world news, technology news, breaking news" />
+  <meta property="og:title" content="Gathered - Global AI News Aggregator" />
+  <meta property="og:description"
+    content="Get real-time, unbiased news summaries powered by AI from top global sources." />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap"
     rel="stylesheet">
-
   <script>
     window.process = window.process || { env: { NODE_ENV: 'production' } };
   </script>
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            serif: ['Merriweather', 'serif'],
-          },
-          colors: {
-            brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-              900: '#1e3a8a',
-            }
-          },
-          animation: {
-            'fade-in': 'fadeIn 0.5s ease-out',
-            'scroll': 'scroll 40s linear infinite',
-          },
-          keyframes: {
-            fadeIn: {
-              '0%': { opacity: '0', transform: 'translateY(10px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' },
-            },
-            scroll: {
-              '0%': { transform: 'translateX(0)' },
-              '100%': { transform: 'translateX(-100%)' },
-            }
-          }
-        }
-      }
-    }
-  </script>
+  colors: {
+  brand: {
+  50: '#eff6ff',
+  100: '#dbeafe',
+  500: '#3b82f6',
+  600: '#2563eb',
+  700: '#1d4ed8',
+  900: '#1e3a8a',
+  }
+  },
   <script type="importmap">
 {
   "imports": {
