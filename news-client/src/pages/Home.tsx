@@ -39,10 +39,6 @@ const Home = () => {
   const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Newsletter State
-  const [email, setEmail] = useState('');
-  const [isSubscribing, setIsSubscribing] = useState(false);
-
   // Pagination
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -200,14 +196,12 @@ const Home = () => {
     }
   };
 
+  // ---/ Event Handlers /---
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchTerm.trim()) return;
 
     setLoading(true);
-    setNews([]); // Clear old news while searching
-    setAiSummary(null);
-
     try {
       const result = await api.searchNews(searchTerm);
 
@@ -215,7 +209,7 @@ const Home = () => {
         setAiSummary(result.summary);
       }
 
-      if (result.articles && Array.isArray(result.articles) && result.articles.length > 0) {
+      if (result.articles && Array.isArray(result.articles)) {
         const mappedResults: NewsItem[] = result.articles.map((item: any, idx: number) => ({
           id: `search-${idx}-${Date.now()}`,
           title: item.title || item.headline,
@@ -240,27 +234,7 @@ const Home = () => {
       console.error("Search failed", error);
       setNews([]);
     } finally {
-      // CRITICAL: Always ensure loading is set to false even if the API throws an error
       setLoading(false);
-    }
-  };
-
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim() || !email.includes('@')) {
-      import('react-hot-toast').then(m => m.toast.error('Please enter a valid email address.'));
-      return;
-    }
-
-    setIsSubscribing(true);
-    try {
-      await api.subscribe({ email });
-      import('react-hot-toast').then(m => m.toast.success('Successfully subscribed to Gathered newsletter!'));
-      setEmail('');
-    } catch (err) {
-      import('react-hot-toast').then(m => m.toast.error('Failed to subscribe. Please try again.'));
-    } finally {
-      setIsSubscribing(false);
     }
   };
 
@@ -501,30 +475,6 @@ const Home = () => {
                 <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
                   We are committed to delivering accurate, timely, and unbiased news by aggregating content from verified global sources.
                 </p>
-
-                <div className="bg-brand-50 dark:bg-gray-800 p-8 rounded-2xl border border-brand-100 dark:border-gray-700 shadow-sm mb-8">
-                  <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Join the Inner Circle</h4>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm">
-                    Get the most important AI-curated news delivered straight to your inbox every morning. No spam, ever.
-                  </p>
-                  <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-                    <input
-                      type="email"
-                      placeholder="Enter your email address..."
-                      className="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                    <button
-                      type="submit"
-                      disabled={isSubscribing}
-                      className="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl transition-colors shadow-md shadow-brand-500/30 flex justify-center items-center whitespace-nowrap"
-                    >
-                      {isSubscribing ? <Loader2 size={20} className="animate-spin" /> : 'Subscribe Free'}
-                    </button>
-                  </form>
-                </div>
 
                 <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700">
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-6 leading-relaxed text-justify md:text-center">
