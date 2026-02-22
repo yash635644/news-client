@@ -50,30 +50,34 @@ const Ticker = () => {
     if (!loading && breakingNews.length === 0) return null;
 
     return (
-        <div className="bg-red-600 text-white text-sm font-bold overflow-hidden h-10 flex items-center relative z-50">
-            <div className="bg-red-700 px-4 h-full flex items-center z-10 shadow-lg shrink-0">
-                <span className="uppercase tracking-wider animate-pulse">Breaking</span>
+        <div className="bg-red-600 text-white text-sm font-bold h-10 flex items-center relative z-50 w-full overflow-hidden">
+            {/* The "Breaking" badge container - Fixed width and won't shrink */}
+            <div className="bg-red-700 px-4 h-full flex items-center z-20 shadow-[4px_0_10px_rgba(0,0,0,0.2)] shrink-0 relative">
+                <span className="uppercase tracking-wider font-black animate-pulse whitespace-nowrap">Breaking</span>
             </div>
-            <div className="whitespace-nowrap flex animate-marquee hover:pause cursor-pointer">
-                {breakingNews.map((item, index) => (
-                    <Link
-                        key={index}
-                        to={`/news/${item.id}`} // Assuming we have detailed view or just link to home for now
-                        className="mx-8 hover:underline opacity-90 hover:opacity-100 transition-opacity"
-                    >
-                        {item.title}  <span className="mx-2 text-red-300">•</span>
-                    </Link>
-                ))}
-                {/* Duplicate for seamless loop if needed, or just let it scroll */}
-                {breakingNews.map((item, index) => (
-                    <Link
-                        key={`dup-${index}`}
-                        to={`/news/${item.id}`}
-                        className="mx-8 hover:underline opacity-90 hover:opacity-100 transition-opacity"
-                    >
-                        {item.title} <span className="mx-2 text-red-300">•</span>
-                    </Link>
-                ))}
+            {/* The scrolling text container - Takes remaining space and hides overflow */}
+            <div className="flex-1 overflow-hidden relative h-full flex items-center">
+                <div className="whitespace-nowrap flex animate-marquee hover:pause cursor-pointer">
+                    {breakingNews.map((item, index) => (
+                        <Link
+                            key={index}
+                            to={`/news/${item.id}`} // Assuming we have detailed view or just link to home for now
+                            className="mx-8 hover:underline opacity-90 hover:opacity-100 transition-opacity"
+                        >
+                            {item.title}  <span className="mx-2 text-red-300">•</span>
+                        </Link>
+                    ))}
+                    {/* Duplicate for seamless loop if needed, or just let it scroll */}
+                    {breakingNews.map((item, index) => (
+                        <Link
+                            key={`dup-${index}`}
+                            to={`/news/${item.id}`}
+                            className="mx-8 hover:underline opacity-90 hover:opacity-100 transition-opacity"
+                        >
+                            {item.title} <span className="mx-2 text-red-300">•</span>
+                        </Link>
+                    ))}
+                </div>
             </div>
             <style>{`
         @keyframes marquee {
