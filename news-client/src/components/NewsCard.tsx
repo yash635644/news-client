@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Share2, Sparkles, Flame, ArrowUpRight, Image as ImageIcon, Volume2, StopCircle } from 'lucide-react';
 import { formatDistanceToNow, isValid, parseISO } from 'date-fns';
+import { Link } from 'react-router-dom';
 import { NewsItem } from '../types';
 
 interface Props {
@@ -59,106 +60,199 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
     setIsSpeaking(true);
   };
 
-  // Determine if this is an internal article that should open in a modal
+  // Determine if this is an internal article that should open in a modal or separate page
   const isInternal = !news.url || news.source === 'Gathered Original' || news.category === 'Originals';
+  const articleLink = isInternal ? `/news/${news.id}` : news.url;
 
   return (
     <div className={`group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-gray-700 flex flex-col h-full ${featured ? 'md:col-span-2 lg:col-span-2 md:flex-row' : ''}`}>
 
       {/* Image Section */}
-      <div
-        className={`relative overflow-hidden bg-gray-200 dark:bg-gray-700 cursor-pointer ${featured ? 'md:w-1/2 h-64 md:h-auto' : 'h-56'}`}
-        onClick={() => isInternal && onClick && onClick(news)}
-      >
-
-        {/* Loading Skeleton */}
-        {isLoading && !hasError && imgSrc && (
-          <div className="absolute inset-0 bg-gray-300 dark:bg-gray-600 animate-pulse flex items-center justify-center z-10">
-            <ImageIcon className="text-gray-400 opacity-50" size={32} />
-          </div>
-        )}
-
-        {hasError || !imgSrc ? (
-          <div className="w-full h-full bg-gradient-to-br from-brand-700 to-gray-900 flex items-center justify-center">
-            <span className="text-white/80 font-serif font-black text-3xl md:text-4xl tracking-widest uppercase">
-              {news.category || 'Gathered'}
-            </span>
-          </div>
-        ) : (
-          <img
-            src={imgSrc}
-            alt={news.title}
-            onError={() => {
-              setHasError(true);
-              setIsLoading(false);
-            }}
-            onLoad={() => setIsLoading(false)}
-            className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-            loading="lazy"
-            decoding="async"
-            referrerPolicy="no-referrer"
-          />
-        )}
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
-
-        {/* LISTEN BUTTON (TTS) - Enhanced UI */}
-        <button
-          onClick={handleSpeak}
-          className={`absolute top-4 right-4 z-30 p-2.5 rounded-full backdrop-blur-md transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.2)] border border-white/20 group/audio
-            ${isSpeaking
-              ? "bg-brand-600/90 text-white ring-2 ring-white/30"
-              : "bg-black/30 text-white hover:bg-black/50 hover:scale-110"
-            }`}
-          title={isSpeaking ? "Stop listening" : "Listen to article"}
+      {isInternal ? (
+        <Link
+          to={articleLink || '#'}
+          className={`relative block overflow-hidden bg-gray-200 dark:bg-gray-700 cursor-pointer ${featured ? 'md:w-1/2 h-64 md:h-auto' : 'h-56'}`}
         >
-          {isSpeaking ? (
-            <div className="flex items-center justify-center w-5 h-5 relative">
-              {/* Waveform Animation */}
-              <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping"></span>
-              <StopCircle size={20} className="relative z-10 fill-white text-brand-600" />
+
+          {/* Loading Skeleton */}
+          {isLoading && !hasError && imgSrc && (
+            <div className="absolute inset-0 bg-gray-300 dark:bg-gray-600 animate-pulse flex items-center justify-center z-10">
+              <ImageIcon className="text-gray-400 opacity-50" size={32} />
+            </div>
+          )}
+
+          {hasError || !imgSrc ? (
+            <div className="w-full h-full bg-gradient-to-br from-brand-700 to-gray-900 flex items-center justify-center">
+              <span className="text-white/80 font-serif font-black text-3xl md:text-4xl tracking-widest uppercase">
+                {news.category || 'Gathered'}
+              </span>
             </div>
           ) : (
-            <Volume2 size={20} className="transition-transform group-hover/audio:scale-110" />
+            <img
+              src={imgSrc}
+              alt={news.title}
+              onError={() => {
+                setHasError(true);
+                setIsLoading(false);
+              }}
+              onLoad={() => setIsLoading(false)}
+              className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+            />
           )}
-        </button>
 
-        {/* Top Badges */}
-        <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-20">
-          {news.isBreaking && (
-            <span className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg animate-pulse rounded-full">
-              <Flame size={12} fill="currentColor" /> Breaking
-            </span>
-          )}
-          <span className="flex items-center gap-1 px-3 py-1 bg-white/95 text-black text-[10px] font-bold uppercase tracking-widest shadow-lg rounded-full">
-            {news.category}
-          </span>
-        </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
 
-        {/* AI Badge */}
-        {news.isAiGenerated && (
-          <div className="absolute bottom-16 right-4 z-20">
-            <div className="px-2 py-1 rounded-lg bg-black/40 backdrop-blur-md flex items-center gap-1 border border-white/10">
-              <Sparkles size={12} className="text-brand-400" />
-              <span className="text-[10px] font-medium text-white">Live AI</span>
-            </div>
-          </div>
-        )}
-
-        {/* Source Logo Overlay */}
-        {news.source && (
-          <div className="absolute bottom-3 left-4 z-20 flex items-center gap-2">
-            {news.sourceLogo ? (
-              <img src={news.sourceLogo} alt={news.source} className="w-6 h-6 rounded-full border border-white/50 bg-white" />
-            ) : (
-              <div className="w-6 h-6 rounded-full bg-brand-600 flex items-center justify-center text-white text-[10px] font-bold shadow-lg">
-                {news.source.charAt(0)}
+          {/* LISTEN BUTTON (TTS) - Enhanced UI */}
+          <button
+            onClick={handleSpeak}
+            className={`absolute top-4 right-4 z-30 p-2.5 rounded-full backdrop-blur-md transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.2)] border border-white/20 group/audio
+            ${isSpeaking
+                ? "bg-brand-600/90 text-white ring-2 ring-white/30"
+                : "bg-black/30 text-white hover:bg-black/50 hover:scale-110"
+              }`}
+            title={isSpeaking ? "Stop listening" : "Listen to article"}
+          >
+            {isSpeaking ? (
+              <div className="flex items-center justify-center w-5 h-5 relative">
+                {/* Waveform Animation */}
+                <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping"></span>
+                <StopCircle size={20} className="relative z-10 fill-white text-brand-600" />
               </div>
+            ) : (
+              <Volume2 size={20} className="transition-transform group-hover/audio:scale-110" />
             )}
-            <span className="text-white text-xs font-bold drop-shadow-md shadow-black">{news.source}</span>
+          </button>
+
+          {/* Top Badges */}
+          <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-20">
+            {news.isBreaking && (
+              <span className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg animate-pulse rounded-full">
+                <Flame size={12} fill="currentColor" /> Breaking
+              </span>
+            )}
+            <span className="flex items-center gap-1 px-3 py-1 bg-white/95 text-black text-[10px] font-bold uppercase tracking-widest shadow-lg rounded-full">
+              {news.category}
+            </span>
           </div>
-        )}
-      </div>
+
+          {/* AI Badge */}
+          {news.isAiGenerated && (
+            <div className="absolute bottom-16 right-4 z-20">
+              <div className="px-2 py-1 rounded-lg bg-black/40 backdrop-blur-md flex items-center gap-1 border border-white/10">
+                <Sparkles size={12} className="text-brand-400" />
+                <span className="text-[10px] font-medium text-white">Live AI</span>
+              </div>
+            </div>
+          )}
+
+          {/* Source Logo Overlay */}
+          {news.source && (
+            <div className="absolute bottom-3 left-4 z-20 flex items-center gap-2">
+              {news.sourceLogo ? (
+                <img src={news.sourceLogo} alt={news.source} className="w-6 h-6 rounded-full border border-white/50 bg-white" />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-brand-600 flex items-center justify-center text-white text-[10px] font-bold shadow-lg">
+                  {news.source.charAt(0)}
+                </div>
+              )}
+              <span className="text-white text-xs font-bold drop-shadow-md shadow-black">{news.source}</span>
+            </div>
+          )}
+        </Link>
+      ) : (
+        <div className={`relative overflow-hidden bg-gray-200 dark:bg-gray-700 ${featured ? 'md:w-1/2 h-64 md:h-auto' : 'h-56'}`}>
+          {/* Loading Skeleton */}
+          {isLoading && !hasError && imgSrc && (
+            <div className="absolute inset-0 bg-gray-300 dark:bg-gray-600 animate-pulse flex items-center justify-center z-10">
+              <ImageIcon className="text-gray-400 opacity-50" size={32} />
+            </div>
+          )}
+
+          {hasError || !imgSrc ? (
+            <div className="w-full h-full bg-gradient-to-br from-brand-700 to-gray-900 flex items-center justify-center">
+              <span className="text-white/80 font-serif font-black text-3xl md:text-4xl tracking-widest uppercase">
+                {news.category || 'Gathered'}
+              </span>
+            </div>
+          ) : (
+            <img
+              src={imgSrc}
+              alt={news.title}
+              onError={() => {
+                setHasError(true);
+                setIsLoading(false);
+              }}
+              onLoad={() => setIsLoading(false)}
+              className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+            />
+          )}
+
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
+
+          {/* LISTEN BUTTON (TTS) - Enhanced UI */}
+          <button
+            onClick={handleSpeak}
+            className={`absolute top-4 right-4 z-30 p-2.5 rounded-full backdrop-blur-md transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.2)] border border-white/20 group/audio
+            ${isSpeaking
+                ? "bg-brand-600/90 text-white ring-2 ring-white/30"
+                : "bg-black/30 text-white hover:bg-black/50 hover:scale-110"
+              }`}
+            title={isSpeaking ? "Stop listening" : "Listen to article"}
+          >
+            {isSpeaking ? (
+              <div className="flex items-center justify-center w-5 h-5 relative">
+                {/* Waveform Animation */}
+                <span className="absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75 animate-ping"></span>
+                <StopCircle size={20} className="relative z-10 fill-white text-brand-600" />
+              </div>
+            ) : (
+              <Volume2 size={20} className="transition-transform group-hover/audio:scale-110" />
+            )}
+          </button>
+
+          {/* Top Badges */}
+          <div className="absolute top-4 left-4 flex flex-wrap gap-2 z-20">
+            {news.isBreaking && (
+              <span className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest shadow-lg animate-pulse rounded-full">
+                <Flame size={12} fill="currentColor" /> Breaking
+              </span>
+            )}
+            <span className="flex items-center gap-1 px-3 py-1 bg-white/95 text-black text-[10px] font-bold uppercase tracking-widest shadow-lg rounded-full">
+              {news.category}
+            </span>
+          </div>
+
+          {/* AI Badge */}
+          {news.isAiGenerated && (
+            <div className="absolute bottom-16 right-4 z-20">
+              <div className="px-2 py-1 rounded-lg bg-black/40 backdrop-blur-md flex items-center gap-1 border border-white/10">
+                <Sparkles size={12} className="text-brand-400" />
+                <span className="text-[10px] font-medium text-white">Live AI</span>
+              </div>
+            </div>
+          )}
+
+          {/* Source Logo Overlay */}
+          {news.source && (
+            <div className="absolute bottom-3 left-4 z-20 flex items-center gap-2">
+              {news.sourceLogo ? (
+                <img src={news.sourceLogo} alt={news.source} className="w-6 h-6 rounded-full border border-white/50 bg-white" />
+              ) : (
+                <div className="w-6 h-6 rounded-full bg-brand-600 flex items-center justify-center text-white text-[10px] font-bold shadow-lg">
+                  {news.source.charAt(0)}
+                </div>
+              )}
+              <span className="text-white text-xs font-bold drop-shadow-md shadow-black">{news.source}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Content Section */}
       <div className={`p-6 flex flex-col flex-grow relative ${featured ? 'md:w-1/2 justify-center py-8' : ''}`}>
@@ -194,12 +288,15 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
           </div>
         </div>
 
-        <h3
-          className={`font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}
-          onClick={() => isInternal && onClick && onClick(news)}
-        >
-          {news.title}
-        </h3>
+        {isInternal ? (
+          <Link to={articleLink || '#'} className={`block font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
+            {news.title}
+          </Link>
+        ) : (
+          <h3 className={`font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
+            {news.title}
+          </h3>
+        )}
 
         <div className="mb-6 flex-grow">
           {Array.isArray(news.summary) ? news.summary.slice(0, 1).map((point, i) => (
@@ -223,13 +320,13 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
           </div>
 
           {isInternal ? (
-            <button
-              onClick={() => onClick && onClick(news)}
+            <Link
+              to={articleLink || '#'}
               className="group/btn pl-4 flex items-center gap-1 text-[11px] md:text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-800 transition-colors whitespace-nowrap"
             >
               Read Full Story
               <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-            </button>
+            </Link>
           ) : (
             <a
               href={news.url || '#'}
