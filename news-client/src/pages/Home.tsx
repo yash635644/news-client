@@ -47,6 +47,10 @@ const Home = () => {
   // Ref to prevent double-fetching in React Strict Mode or rapid clicks
   const isFetchingRef = React.useRef(false);
 
+  // Contact Form State
+  const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
+  const [contactStatus, setContactStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
   // ---/ Effects /---
   // Fetch news when category changes
   useEffect(() => {
@@ -235,6 +239,41 @@ const Home = () => {
       setNews([]);
     } finally {
       setTimeout(() => setLoading(false), 300); // Give a tiny delay for visual smoothness when switching 
+    }
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactStatus('loading');
+
+    try {
+      // 1. Submit to Local Backend (PostgreSQL Database)
+      await api.submitContactForm(contactForm).catch(err => {
+        console.warn("Backend save failed, but proceeding to Formspree", err);
+      });
+
+      // 2. Submit to Formspree (Email Notification)
+      const formspreeResponse = await fetch('https://formspree.io/f/xgolpaka', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contactForm)
+      });
+
+      if (formspreeResponse.ok) {
+        setContactStatus('success');
+        setContactForm({ name: '', email: '', message: '' }); // Reset form
+        setTimeout(() => setContactStatus('idle'), 5000); // Reset status after 5s
+      } else {
+        setContactStatus('error');
+        setTimeout(() => setContactStatus('idle'), 5000);
+      }
+    } catch (error) {
+      console.error("Contact Form Error:", error);
+      setContactStatus('error');
+      setTimeout(() => setContactStatus('idle'), 5000);
     }
   };
 
@@ -472,22 +511,74 @@ const Home = () => {
                   Thank You for Reading Gathered
                 </h3>
 
-                <p className="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
-                  We are committed to delivering accurate, timely, and unbiased news by aggregating content from verified global sources.
+                <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+                  We value your feedback and are committed to providing the best news reading experience. Send us a message below.
                 </p>
 
-                <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-100 dark:border-gray-700">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-6 leading-relaxed text-justify md:text-center">
-                    We value your feedback and are committed to providing the best news reading experience. If you have any suggestions for new features, encounter technical issues, or have concerns regarding copyright or content accuracy, please do not hesitate to reach out. Our dedicated support team monitors this inbox around the clock and strives to address all inquiries within 24 hours. Your input helps us shape the future of Gathered.
-                  </p>
+                <div className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl border border-gray-100 dark:border-gray-700 max-w-xl mx-auto text-left shadow-sm">
+                  {contactStatus === 'success' ? (
+                    <div className="text-center py-8 animate-fade-in">
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-4">
+                        <CheckCircle2 size={32} />
+                      </div>
+                      <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Message Sent!</h4>
+                      <p className="text-gray-500 dark:text-gray-400">Thank you for reaching out. Our team will get back to you shortly.</p>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleContactSubmit} className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Your Name</label>
+                          <input
+                            required
+                            type="text"
+                            placeholder="John Doe"
+                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all dark:text-white"
+                            value={contactForm.name}
+                            onChange={e => setContactForm({ ...contactForm, name: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Email Address</label>
+                          <input
+                            required
+                            type="email"
+                            placeholder="john@example.com"
+                            className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all dark:text-white"
+                            value={contactForm.email}
+                            onChange={e => setContactForm({ ...contactForm, email: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-bold text-gray-700 dark:text-gray-300">Message</label>
+                        <textarea
+                          required
+                          rows={4}
+                          placeholder="How can we help you today?"
+                          className="w-full px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-all resize-none dark:text-white"
+                          value={contactForm.message}
+                          onChange={e => setContactForm({ ...contactForm, message: e.target.value })}
+                        ></textarea>
+                      </div>
 
-                  <a
-                    href="mailto:support@gathered.com?subject=Feedback%20%2F%20Copyright%20Concern"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 rounded-full font-bold transition-all shadow-sm hover:shadow-md"
-                  >
-                    <Mail size={18} />
-                    Contact Support Team
-                  </a>
+                      {contactStatus === 'error' && (
+                        <p className="text-sm text-red-500 font-medium">Failed to send message. Please try again later.</p>
+                      )}
+
+                      <button
+                        type="submit"
+                        disabled={contactStatus === 'loading'}
+                        className="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-500/20 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2"
+                      >
+                        {contactStatus === 'loading' ? (
+                          <><Loader2 size={18} className="animate-spin" /> Sending...</>
+                        ) : (
+                          <><Mail size={18} /> Send Message </>
+                        )}
+                      </button>
+                    </form>
+                  )}
                 </div>
 
                 <div className="mt-8 flex justify-center gap-6 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
