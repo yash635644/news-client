@@ -511,11 +511,10 @@ const Home = () => {
                   Thank You for Reading Gathered
                 </h3>
 
-                <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
-                  We value your feedback and are committed to providing the best news reading experience. Send us a message below.
-                </p>
-
                 <div className="bg-gray-50 dark:bg-gray-800 p-8 rounded-2xl border border-gray-100 dark:border-gray-700 max-w-xl mx-auto text-left shadow-sm">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-6 leading-relaxed text-justify md:text-center">
+                    We value your feedback and are committed to providing the best news reading experience. If you have any suggestions for new features, encounter technical issues, or have concerns regarding copyright or content accuracy, please do not hesitate to reach out. Our dedicated support team monitors this inbox around the clock and strives to address all inquiries within 24 hours. Your input helps us shape the future of Gathered.
+                  </p>
                   {contactStatus === 'success' ? (
                     <div className="text-center py-8 animate-fade-in">
                       <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 mb-4">
