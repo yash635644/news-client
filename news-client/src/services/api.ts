@@ -299,6 +299,22 @@ export const api = {
   },
 
   /**
+   * Submits the contact form to the backend database.
+   */
+  submitContactForm: async (data: { name: string, email: string, message: string }) => {
+    if (API_URL) {
+      const res = await fetch(`${API_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('Failed to submit contact form');
+      return await res.json();
+    }
+    throw new Error('Backend unavailable');
+  },
+
+  /**
    * Fetches the list of active RSS Feeds from the backend.
    */
   getRSSFeeds: async () => {
