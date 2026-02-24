@@ -6,7 +6,6 @@ import { NewsItem } from '../types';
 import { api } from '../services/api';
 import SEO from '../components/SEO';
 import { NewsCardSkeleton } from '../components/Skeleton';
-import OptimizedImage from '../components/OptimizedImage';
 
 const ArticlePage = () => {
     const { id } = useParams<{ id: string }>();
@@ -113,12 +112,11 @@ const ArticlePage = () => {
                 </header>
 
                 {article.imageUrl && (
-                    <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl relative h-[400px] md:h-[600px]">
-                        <OptimizedImage
+                    <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl relative">
+                        <img
                             src={article.imageUrl}
                             alt={article.title}
-                            fallbackText={article.category}
-                            className="w-full h-full object-cover"
+                            className="w-full h-auto object-cover max-h-[600px]"
                         />
                     </div>
                 )}
