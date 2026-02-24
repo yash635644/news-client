@@ -3,7 +3,6 @@ import { Clock, Share2, Sparkles, Flame, ArrowUpRight, Image as ImageIcon, Volum
 import { formatDistanceToNow, isValid, parseISO } from 'date-fns';
 import { Link } from 'react-router-dom';
 import { NewsItem } from '../types';
-import OptimizedImage from './OptimizedImage';
 
 interface Props {
   news: NewsItem;
@@ -12,6 +11,17 @@ interface Props {
 }
 
 const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
+  // ... existing state ...
+  const [imgSrc, setImgSrc] = useState(news.imageUrl);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setImgSrc(news.imageUrl);
+    setIsLoading(true);
+    setHasError(false);
+  }, [news.imageUrl]);
+
   const getFormattedDate = (dateString: string) => {
     try {
       const date = parseISO(dateString);
@@ -64,12 +74,34 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
           className={`relative block overflow-hidden bg-gray-200 dark:bg-gray-700 cursor-pointer ${featured ? 'md:w-1/2 h-64 md:h-auto' : 'h-56'}`}
         >
 
-          <OptimizedImage
-            src={news.imageUrl || ''}
-            alt={news.title}
-            fallbackText={news.category || 'Gathered'}
-            className="group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0 z-0"
-          />
+          {/* Loading Skeleton */}
+          {isLoading && !hasError && imgSrc && (
+            <div className="absolute inset-0 bg-gray-300 dark:bg-gray-600 animate-pulse flex items-center justify-center z-10">
+              <ImageIcon className="text-gray-400 opacity-50" size={32} />
+            </div>
+          )}
+
+          {hasError || !imgSrc ? (
+            <div className="w-full h-full bg-gradient-to-br from-brand-700 to-gray-900 flex items-center justify-center">
+              <span className="text-white/80 font-serif font-black text-3xl md:text-4xl tracking-widest uppercase">
+                {news.category || 'Gathered'}
+              </span>
+            </div>
+          ) : (
+            <img
+              src={imgSrc}
+              alt={news.title}
+              onError={() => {
+                setHasError(true);
+                setIsLoading(false);
+              }}
+              onLoad={() => setIsLoading(false)}
+              className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+            />
+          )}
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
 
@@ -132,12 +164,34 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
         </Link>
       ) : (
         <div className={`relative overflow-hidden bg-gray-200 dark:bg-gray-700 ${featured ? 'md:w-1/2 h-64 md:h-auto' : 'h-56'}`}>
-          <OptimizedImage
-            src={news.imageUrl || ''}
-            alt={news.title}
-            fallbackText={news.category || 'Gathered'}
-            className="group-hover:scale-105 transition-transform duration-700 ease-out absolute inset-0 z-0"
-          />
+          {/* Loading Skeleton */}
+          {isLoading && !hasError && imgSrc && (
+            <div className="absolute inset-0 bg-gray-300 dark:bg-gray-600 animate-pulse flex items-center justify-center z-10">
+              <ImageIcon className="text-gray-400 opacity-50" size={32} />
+            </div>
+          )}
+
+          {hasError || !imgSrc ? (
+            <div className="w-full h-full bg-gradient-to-br from-brand-700 to-gray-900 flex items-center justify-center">
+              <span className="text-white/80 font-serif font-black text-3xl md:text-4xl tracking-widest uppercase">
+                {news.category || 'Gathered'}
+              </span>
+            </div>
+          ) : (
+            <img
+              src={imgSrc}
+              alt={news.title}
+              onError={() => {
+                setHasError(true);
+                setIsLoading(false);
+              }}
+              onLoad={() => setIsLoading(false)}
+              className={`w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+              loading="lazy"
+              decoding="async"
+              referrerPolicy="no-referrer"
+            />
+          )}
 
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 md:opacity-60 pointer-events-none"></div>
 
