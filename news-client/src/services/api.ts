@@ -101,15 +101,20 @@ const fetchClientSideRSS = async (category: string) => {
 
     results.forEach(data => {
       if (data && data.status === 'ok') {
-        allArticles = [...allArticles, ...data.items.map((item: any) => ({
-          title: item.title,
-          summary: [item.description?.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...'],
-          link: item.link,
-          pubDate: item.pubDate,
-          source: data.feed.title,
-          category: category,
-          imageUrl: item.thumbnail || item.enclosure?.link
-        }))];
+        allArticles = [...allArticles, ...data.items.map((item: any) => {
+          const rawDesc = item.description?.replace(/<[^>]*>?/gm, '') || '';
+          const words = rawDesc.split(' ');
+          const summaryText = words.length > 103 ? words.slice(0, 103).join(' ') + '...' : rawDesc;
+          return {
+            title: item.title,
+            summary: [summaryText],
+            link: item.link,
+            pubDate: item.pubDate,
+            source: data.feed.title,
+            category: category,
+            imageUrl: item.thumbnail || item.enclosure?.link
+          };
+        })];
       }
     });
 
@@ -156,15 +161,20 @@ const clientSideSearch = async (query: string) => {
             item.title.toLowerCase().includes(searchLower) ||
             (item.description && item.description.toLowerCase().includes(searchLower))
           );
-          catMatches = [...catMatches, ...matches.map((item: any) => ({
-            title: item.title,
-            summary: [item.description?.replace(/<[^>]*>?/gm, '').substring(0, 150) + '...'],
-            category: cat,
-            source: data.feed.title,
-            url: item.link,
-            imageUrl: item.thumbnail || item.enclosure?.link,
-            publishedAt: item.pubDate
-          }))];
+          catMatches = [...catMatches, ...matches.map((item: any) => {
+            const rawDesc = item.description?.replace(/<[^>]*>?/gm, '') || '';
+            const words = rawDesc.split(' ');
+            const summaryText = words.length > 103 ? words.slice(0, 103).join(' ') + '...' : rawDesc;
+            return {
+              title: item.title,
+              summary: [summaryText],
+              category: cat,
+              source: data.feed.title,
+              url: item.link,
+              imageUrl: item.thumbnail || item.enclosure?.link,
+              publishedAt: item.pubDate
+            };
+          })];
         }
       });
       return catMatches;
