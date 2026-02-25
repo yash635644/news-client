@@ -12,6 +12,7 @@ import SEO from '../components/SEO';
 
 // Components
 import NewsCard from '../components/NewsCard';
+import AdBanner from '../components/AdBanner';
 import { NewsCardSkeleton } from '../components/Skeleton';
 import ArticleModal from '../components/ArticleModal';
 
@@ -431,6 +432,10 @@ const Home = () => {
               </div>
             )}
 
+            {!searchTerm && effectiveFeatured.length > 0 && (
+              <AdBanner dataAdSlot="top_banner_slot" />
+            )}
+
             {!searchTerm && (
               <div className="flex items-center gap-4 mb-8">
                 <h2 className="text-2xl font-black text-gray-900 dark:text-white font-serif flex items-center gap-2">
@@ -500,6 +505,8 @@ const Home = () => {
                 </button>
               </div>
             )}
+
+            <AdBanner dataAdSlot="bottom_banner_slot" />
 
             <div className="mt-16 py-12 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded-3xl mx-4 mb-8 shadow-sm">
               <div className="max-w-3xl mx-auto text-center px-6">
