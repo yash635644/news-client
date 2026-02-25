@@ -433,7 +433,7 @@ const Home = () => {
             )}
 
             {!searchTerm && effectiveFeatured.length > 0 && (
-              <AdBanner dataAdSlot="top_banner_slot" />
+              <AdBanner dataAdSlot="7455488883" />
             )}
 
             {!searchTerm && (
@@ -506,7 +506,7 @@ const Home = () => {
               </div>
             )}
 
-            <AdBanner dataAdSlot="bottom_banner_slot" />
+            <AdBanner dataAdSlot="5950835526" />
 
             <div className="mt-16 py-12 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded-3xl mx-4 mb-8 shadow-sm">
               <div className="max-w-3xl mx-auto text-center px-6">
