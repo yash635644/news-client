@@ -164,7 +164,7 @@ const ArticlePage = () => {
                     </div>
                 </header>
 
-                <AdBanner dataAdSlot="article_top_slot" className="mb-8" />
+                <AdBanner dataAdSlot="7690099660" className="mb-8" />
 
                 {
                     article.imageUrl && (
@@ -223,7 +223,7 @@ const ArticlePage = () => {
                     )}
                 </article>
 
-                <AdBanner dataAdSlot="article_bottom_slot" className="mt-12 border-t border-gray-200 dark:border-gray-800 pt-8" />
+                <AdBanner dataAdSlot="2437772982" className="mt-12 border-t border-gray-200 dark:border-gray-800 pt-8" />
 
                 {
                     article.tags && article.tags.length > 0 && (
