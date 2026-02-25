@@ -180,13 +180,19 @@ const ArticlePage = () => {
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                                 <Sparkles size={24} className="text-brand-500" /> AI Executive Summary
                             </h3>
-                            <ul className="space-y-3">
-                                {article.summary.map((point, i) => (
-                                    <li key={i} className="flex gap-3 text-gray-700 dark:text-gray-300 text-lg">
-                                        <span className="text-brand-500 font-bold mt-1">•</span> {point}
-                                    </li>
-                                ))}
-                            </ul>
+                            {article.summary.length === 1 ? (
+                                <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                                    {article.summary[0]}
+                                </p>
+                            ) : (
+                                <ul className="space-y-3">
+                                    {article.summary.map((point, i) => (
+                                        <li key={i} className="flex gap-3 text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                                            <span className="text-brand-500 font-bold mt-1">•</span> {point}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
                     )}
 
