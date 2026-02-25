@@ -6,6 +6,7 @@ import { NewsItem } from '../types';
 import { api } from '../services/api';
 import SEO from '../components/SEO';
 import { NewsCardSkeleton } from '../components/Skeleton';
+import { Sparkles, ExternalLink } from 'lucide-react';
 
 const ArticlePage = () => {
     const { id } = useParams<{ id: string }>();
@@ -18,6 +19,46 @@ const ArticlePage = () => {
             if (!id) return;
             setLoading(true);
             try {
+                // Check if it's an external RSS link based on ID format
+                if (id?.startsWith('external-')) {
+                    const base64Url = id.replace('external-', '');
+                    const decodedUrl = atob(base64Url);
+
+                    // Call the search API to get a summary/details of this article via backend caching
+                    // or at least construct a basic NewsItem to display and redirect seamlessly
+
+                    // We can attempt to find it in the search cache or just display it as a stub
+                    setArticle({
+                        id,
+                        title: 'Live News Article',
+                        summary: ['Redirecting to or displaying summarized content...'],
+                        content: `Redirecting to source: [${decodedUrl}](${decodedUrl})`,
+                        category: 'World',
+                        tags: ['Live'],
+                        source: 'Web',
+                        url: decodedUrl,
+                        publishedAt: new Date().toISOString(),
+                        isAiGenerated: false
+                    });
+
+                    // Try to fetch better details via AI search endpoint if possible
+                    try {
+                        const result = await api.searchNews(decodedUrl);
+                        if (result.articles && result.articles.length > 0) {
+                            const matched = result.articles[0];
+                            setArticle({
+                                ...matched,
+                                id,
+                                url: decodedUrl
+                            });
+                        }
+                    } catch (e) {
+                        console.warn("Could not fetch full AI summary for external item");
+                    }
+
+                    return;
+                }
+
                 // First try fetching single article (if backed by DB)
                 const data = await api.getNewsById(id);
 
@@ -126,7 +167,7 @@ const ArticlePage = () => {
                     {article.summary && article.summary.length > 0 && (
                         <div className="bg-gray-50 dark:bg-gray-800/50 p-8 rounded-2xl border-l-4 border-brand-500 mb-10 not-prose">
                             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                                <Clock size={24} className="text-brand-500" /> Executive Summary
+                                <Sparkles size={24} className="text-brand-500" /> AI Executive Summary
                             </h3>
                             <ul className="space-y-3">
                                 {article.summary.map((point, i) => (
@@ -138,7 +179,26 @@ const ArticlePage = () => {
                         </div>
                     )}
 
-                    <ReactMarkdown>{article.content || 'Content not available.'}</ReactMarkdown>
+                    {id?.startsWith('external-') ? (
+                        <div className="bg-brand-50 dark:bg-brand-900/20 p-8 rounded-2xl border border-brand-200 dark:border-brand-800 text-center not-prose my-10">
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                                Continue Reading at {article.source}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-lg mx-auto">
+                                You are reading an AI-generated summary of a live news event. For full coverage, journalistic context, and media, please visit the original publisher.
+                            </p>
+                            <a
+                                href={article.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-500/20 transition-all active:scale-95"
+                            >
+                                Read Full Article on Source <ExternalLink size={20} />
+                            </a>
+                        </div>
+                    ) : (
+                        <ReactMarkdown>{article.content || 'Content not available.'}</ReactMarkdown>
+                    )}
                 </article>
 
                 {article.tags && article.tags.length > 0 && (
