@@ -62,7 +62,7 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
 
   // Determine if this is an internal article that should open in a modal or separate page
   const isInternal = !news.url || news.source === 'Gathered Original' || news.category === 'Originals';
-  const articleLink = isInternal ? `/news/${news.id}` : news.url;
+  const articlePath = isInternal ? `/news/${news.id}` : `/news/external-${btoa(news.url || '').replace(/=/g, '')}`;
 
   return (
     <div className={`group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-gray-700 flex flex-col h-full ${featured ? 'md:col-span-2 lg:col-span-2 md:flex-row' : ''}`}>
@@ -70,7 +70,7 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
       {/* Image Section */}
       {isInternal ? (
         <Link
-          to={articleLink || '#'}
+          to={articlePath}
           className={`relative block overflow-hidden bg-gray-200 dark:bg-gray-700 cursor-pointer ${featured ? 'md:w-1/2 h-64 md:h-auto' : 'h-56'}`}
         >
 
@@ -289,13 +289,13 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
         </div>
 
         {isInternal ? (
-          <Link to={articleLink || '#'} className={`block font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
+          <Link to={articlePath} className={`block font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
             {news.title}
           </Link>
         ) : (
-          <h3 className={`font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
+          <Link to={articlePath} className={`block font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
             {news.title}
-          </h3>
+          </Link>
         )}
 
         <div className="mb-6 flex-grow">
@@ -321,22 +321,20 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
 
           {isInternal ? (
             <Link
-              to={articleLink || '#'}
+              to={articlePath}
               className="group/btn pl-4 flex items-center gap-1 text-[11px] md:text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-800 transition-colors whitespace-nowrap"
             >
               Read Full Story
               <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
             </Link>
           ) : (
-            <a
-              href={news.url || '#'}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to={articlePath}
               className="group/btn pl-4 flex items-center gap-1 text-[11px] md:text-xs font-bold text-gray-900 dark:text-white hover:text-brand-600 transition-colors whitespace-nowrap"
             >
-              Read full news at source
+              Read full artificial summary
               <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
-            </a>
+            </Link>
           )}
         </div>
       </div>
