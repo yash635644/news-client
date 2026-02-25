@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, Calendar, Clock, User, Share2, Tag } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { NewsItem } from '../types';
@@ -10,6 +10,9 @@ import { Sparkles, ExternalLink } from 'lucide-react';
 
 const ArticlePage = () => {
     const { id } = useParams<{ id: string }>();
+    const location = useLocation();
+    const passedArticle = location.state?.article as NewsItem | undefined;
+
     const [article, setArticle] = useState<NewsItem | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -17,6 +20,14 @@ const ArticlePage = () => {
     useEffect(() => {
         const fetchArticle = async () => {
             if (!id) return;
+
+            // If we have the full article passed via router state (e.g. from Home page click), use it!
+            if (passedArticle && id.startsWith('external-')) {
+                setArticle(passedArticle);
+                setLoading(false);
+                return;
+            }
+
             setLoading(true);
             try {
                 // Check if it's an external RSS link based on ID format
