@@ -7,6 +7,7 @@ import { api } from '../services/api';
 import SEO from '../components/SEO';
 import { NewsCardSkeleton } from '../components/Skeleton';
 import { Sparkles, ExternalLink } from 'lucide-react';
+import AdBanner from '../components/AdBanner';
 
 const ArticlePage = () => {
     const { id } = useParams<{ id: string }>();
@@ -163,15 +164,19 @@ const ArticlePage = () => {
                     </div>
                 </header>
 
-                {article.imageUrl && (
-                    <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl relative">
-                        <img
-                            src={article.imageUrl}
-                            alt={article.title}
-                            className="w-full h-auto object-cover max-h-[600px]"
-                        />
-                    </div>
-                )}
+                <AdBanner dataAdSlot="article_top_slot" className="mb-8" />
+
+                {
+                    article.imageUrl && (
+                        <div className="mb-12 rounded-2xl overflow-hidden shadow-2xl relative">
+                            <img
+                                src={article.imageUrl}
+                                alt={article.title}
+                                className="w-full h-auto object-cover max-h-[600px]"
+                            />
+                        </div>
+                    )
+                }
 
                 <article className="prose dark:prose-invert max-w-none prose-lg prose-headings:font-serif prose-a:text-brand-600 leading-relaxed">
                     {/* Summary Block */}
@@ -218,17 +223,20 @@ const ArticlePage = () => {
                     )}
                 </article>
 
-                {article.tags && article.tags.length > 0 && (
-                    <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
-                        <div className="flex flex-wrap gap-2">
-                            {article.tags.map(tag => (
-                                <span key={tag} className="flex items-center gap-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium hover:bg-brand-50 dark:hover:bg-brand-900/20 hover:text-brand-600 transition-colors cursor-default">
-                                    <Tag size={14} /> {tag}
-                                </span>
-                            ))}
+                <AdBanner dataAdSlot="article_bottom_slot" className="mt-12 border-t border-gray-200 dark:border-gray-800 pt-8" />
+
+                {
+                    article.tags && article.tags.length > 0 && (
+                        <div className="mt-8">
+                            <div className="flex flex-wrap gap-2">
+                                {article.tags.map(tag => (
+                                    <span key={tag} className="flex items-center gap-1 px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium hover:bg-brand-50 dark:hover:bg-brand-900/20 hover:text-brand-600 transition-colors cursor-default">
+                                        <Tag size={14} /> {tag}
+                                    </span>
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
             </div>
         </div>
     );
