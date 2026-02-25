@@ -334,7 +334,7 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
               state={{ article: news }}
               className="group/btn pl-4 flex items-center gap-1 text-[11px] md:text-xs font-bold text-gray-900 dark:text-white hover:text-brand-600 transition-colors whitespace-nowrap"
             >
-              Read full artificial summary
+              Read full AI Executive Summary
               <ArrowUpRight size={14} className="group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
             </Link>
           )}
