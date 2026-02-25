@@ -67,10 +67,10 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
   return (
     <div className={`group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-gray-700 flex flex-col h-full ${featured ? 'md:col-span-2 lg:col-span-2 md:flex-row' : ''}`}>
 
-      {/* Image Section */}
       {isInternal ? (
         <Link
           to={articlePath}
+          state={{ article: news }}
           className={`relative block overflow-hidden bg-gray-200 dark:bg-gray-700 cursor-pointer ${featured ? 'md:w-1/2 h-64 md:h-auto' : 'h-56'}`}
         >
 
@@ -289,11 +289,11 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
         </div>
 
         {isInternal ? (
-          <Link to={articlePath} className={`block font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
+          <Link to={articlePath} state={{ article: news }} className={`block font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
             {news.title}
           </Link>
         ) : (
-          <Link to={articlePath} className={`block font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
+          <Link to={articlePath} state={{ article: news }} className={`block font-serif font-bold text-gray-900 dark:text-white leading-tight mb-4 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors cursor-pointer ${featured ? 'text-2xl md:text-3xl lg:text-4xl' : 'text-lg line-clamp-2'}`}>
             {news.title}
           </Link>
         )}
@@ -322,6 +322,7 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
           {isInternal ? (
             <Link
               to={articlePath}
+              state={{ article: news }}
               className="group/btn pl-4 flex items-center gap-1 text-[11px] md:text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-800 transition-colors whitespace-nowrap"
             >
               Read Full Story
@@ -330,6 +331,7 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
           ) : (
             <Link
               to={articlePath}
+              state={{ article: news }}
               className="group/btn pl-4 flex items-center gap-1 text-[11px] md:text-xs font-bold text-gray-900 dark:text-white hover:text-brand-600 transition-colors whitespace-nowrap"
             >
               Read full artificial summary
