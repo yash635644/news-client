@@ -270,12 +270,12 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
                     await navigator.share({
                       title: news.title,
                       text: news.summary[0] || news.title,
-                      url: news.url || window.location.href
+                      url: window.location.origin + articlePath
                     });
                   } catch (err) { console.error('Share failed', err); }
                 } else {
                   try {
-                    await navigator.clipboard.writeText(news.url || window.location.href);
+                    await navigator.clipboard.writeText(window.location.origin + articlePath);
                     alert('Link copied to clipboard!');
                   } catch (err) { console.error('Copy failed', err); }
                 }
