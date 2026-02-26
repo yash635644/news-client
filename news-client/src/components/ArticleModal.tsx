@@ -27,7 +27,20 @@ const ArticleModal: React.FC<Props> = ({ article, isOpen, onClose }) => {
         if (navigator.share) {
             try {
                 const isInternal = !article.url || article.source === 'Gathered Original' || article.category === 'Originals';
-                const articlePath = isInternal ? `/news/${article.id}` : `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
+
+                let externalPath = '';
+                try {
+                    const payload = {
+                        u: article.url, t: article.title, i: article.imageUrl,
+                        s: article.source, c: article.category, d: article.publishedAt,
+                        m: Array.isArray(article.summary) ? article.summary[0] : article.summary
+                    };
+                    externalPath = `/news/external-${btoa(encodeURIComponent(JSON.stringify(payload))).replace(/=/g, '')}`;
+                } catch {
+                    externalPath = `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
+                }
+
+                const articlePath = isInternal ? `/news/${article.id}` : externalPath;
 
                 await navigator.share({
                     title: article.title,
@@ -40,7 +53,20 @@ const ArticleModal: React.FC<Props> = ({ article, isOpen, onClose }) => {
         } else {
             try {
                 const isInternal = !article.url || article.source === 'Gathered Original' || article.category === 'Originals';
-                const articlePath = isInternal ? `/news/${article.id}` : `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
+
+                let externalPath = '';
+                try {
+                    const payload = {
+                        u: article.url, t: article.title, i: article.imageUrl,
+                        s: article.source, c: article.category, d: article.publishedAt,
+                        m: Array.isArray(article.summary) ? article.summary[0] : article.summary
+                    };
+                    externalPath = `/news/external-${btoa(encodeURIComponent(JSON.stringify(payload))).replace(/=/g, '')}`;
+                } catch {
+                    externalPath = `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
+                }
+
+                const articlePath = isInternal ? `/news/${article.id}` : externalPath;
                 await navigator.clipboard.writeText(window.location.origin + articlePath);
                 alert('Link copied to clipboard');
             } catch (err) {
