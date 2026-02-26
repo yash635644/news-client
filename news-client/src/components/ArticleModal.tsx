@@ -26,16 +26,26 @@ const ArticleModal: React.FC<Props> = ({ article, isOpen, onClose }) => {
     const handleShare = async () => {
         if (navigator.share) {
             try {
+                const isInternal = !article.url || article.source === 'Gathered Original' || article.category === 'Originals';
+                const articlePath = isInternal ? `/news/${article.id}` : `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
+
                 await navigator.share({
                     title: article.title,
-                    text: article.summary[0],
-                    url: article.url || window.location.href
+                    text: article.summary[0] || article.title,
+                    url: window.location.origin + articlePath
                 });
             } catch (err) {
                 console.error('Share failed', err);
             }
         } else {
-            alert('Link copied to clipboard');
+            try {
+                const isInternal = !article.url || article.source === 'Gathered Original' || article.category === 'Originals';
+                const articlePath = isInternal ? `/news/${article.id}` : `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
+                await navigator.clipboard.writeText(window.location.origin + articlePath);
+                alert('Link copied to clipboard');
+            } catch (err) {
+                console.error('Copy failed', err);
+            }
         }
     };
 
