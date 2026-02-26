@@ -50,25 +50,59 @@ const ArticlePage = () => {
             try {
                 // Check if it's an external RSS link based on ID format
                 if (id?.startsWith('external-')) {
-                    const base64Url = id.replace('external-', '');
-                    const decodedUrl = atob(base64Url);
+                    const base64Str = id.replace('external-', '');
+                    let decodedUrl = '';
+                    let restoredArticle: any = null;
 
-                    // Call the search API to get a summary/details of this article via backend caching
-                    // or at least construct a basic NewsItem to display and redirect seamlessly
+                    try {
+                        // 1. Try decoding as JSON Payload URL (New format)
+                        const decodedPayload = decodeURIComponent(atob(base64Str));
+                        if (decodedPayload.startsWith('{')) {
+                            const payload = JSON.parse(decodedPayload);
+                            decodedUrl = payload.u;
+                            restoredArticle = {
+                                id,
+                                title: payload.t || 'Live News Article',
+                                summary: payload.m ? [payload.m] : ['Redirecting to source...'],
+                                content: `Redirecting to source: [${decodedUrl}](${decodedUrl})`,
+                                category: payload.c || 'World',
+                                tags: ['Live'],
+                                source: payload.s || 'Web',
+                                url: decodedUrl,
+                                imageUrl: payload.i,
+                                publishedAt: payload.d || new Date().toISOString(),
+                                isAiGenerated: false
+                            };
+                        } else {
+                            // Legacy plain string fallback
+                            decodedUrl = decodedPayload;
+                        }
+                    } catch (e) {
+                        try {
+                            // Legacy simple atob fallback without encodeURIComponent
+                            decodedUrl = atob(base64Str);
+                        } catch (err) {
+                            decodedUrl = '';
+                        }
+                    }
 
-                    // We can attempt to find it in the search cache or just display it as a stub
-                    setArticle({
-                        id,
-                        title: 'Live News Article',
-                        summary: ['Redirecting to or displaying summarized content...'],
-                        content: `Redirecting to source: [${decodedUrl}](${decodedUrl})`,
-                        category: 'World',
-                        tags: ['Live'],
-                        source: 'Web',
-                        url: decodedUrl,
-                        publishedAt: new Date().toISOString(),
-                        isAiGenerated: false
-                    });
+                    if (!restoredArticle) {
+                        restoredArticle = {
+                            id,
+                            title: 'Live News Article',
+                            summary: ['Redirecting to or displaying summarized content...'],
+                            content: `Redirecting to source: [${decodedUrl}](${decodedUrl})`,
+                            category: 'World',
+                            tags: ['Live'],
+                            source: 'Web',
+                            url: decodedUrl,
+                            publishedAt: new Date().toISOString(),
+                            isAiGenerated: false
+                        };
+                    }
+
+                    // Set the perfectly restored article instantly without waiting for backend
+                    setArticle(restoredArticle);
 
                     // Try to fetch better details via AI search endpoint if possible
                     try {
