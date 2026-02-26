@@ -103,6 +103,7 @@ const ArticlePage = () => {
 
                     // Set the perfectly restored article instantly without waiting for backend
                     setArticle(restoredArticle);
+                    setLoading(false); // Stop the spinner immediately since we have the data
 
                     // Try to fetch better details via AI search endpoint if possible
                     try {
