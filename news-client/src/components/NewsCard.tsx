@@ -62,7 +62,25 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
 
   // Determine if this is an internal article that should open in a modal or separate page
   const isInternal = !news.url || news.source === 'Gathered Original' || news.category === 'Originals';
-  const articlePath = isInternal ? `/news/${news.id}` : `/news/external-${btoa(news.url || '').replace(/=/g, '')}`;
+
+  const generateExternalPath = () => {
+    try {
+      const payload = {
+        u: news.url,
+        t: news.title,
+        i: news.imageUrl,
+        s: news.source,
+        c: news.category,
+        m: Array.isArray(news.summary) ? news.summary[0] : news.summary,
+        d: news.publishedAt
+      };
+      return `/news/external-${btoa(encodeURIComponent(JSON.stringify(payload))).replace(/=/g, '')}`;
+    } catch (e) {
+      return `/news/external-${btoa(news.url || '').replace(/=/g, '')}`;
+    }
+  };
+
+  const articlePath = isInternal ? `/news/${news.id}` : generateExternalPath();
 
   return (
     <div className={`group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 dark:border-gray-700 flex flex-col h-full ${featured ? 'md:col-span-2 lg:col-span-2 md:flex-row' : ''}`}>
