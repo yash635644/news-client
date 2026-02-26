@@ -14,6 +14,23 @@ const ArticlePage = () => {
     const location = useLocation();
     const passedArticle = location.state?.article as NewsItem | undefined;
 
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: article?.title || 'Gathered News',
+                    text: article?.summary?.[0] || article?.title,
+                    url: window.location.href
+                });
+            } catch (err) { console.error('Share failed', err); }
+        } else {
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            } catch (err) { console.error('Copy failed', err); }
+        }
+    };
+
     const [article, setArticle] = useState<NewsItem | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -161,6 +178,12 @@ const ArticlePage = () => {
                             <Clock size={18} />
                             <span>{new Date(article.publishedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
+                        <button
+                            onClick={handleShare}
+                            className="ml-auto flex items-center gap-2 text-brand-600 hover:text-brand-700 font-bold transition-colors"
+                        >
+                            <Share2 size={18} /> Share
+                        </button>
                     </div>
                 </header>
 
