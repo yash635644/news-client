@@ -30,12 +30,7 @@ const ArticleModal: React.FC<Props> = ({ article, isOpen, onClose }) => {
 
                 let externalPath = '';
                 try {
-                    const payload = {
-                        u: article.url, t: article.title, i: article.imageUrl,
-                        s: article.source, c: article.category, d: article.publishedAt,
-                        m: Array.isArray(article.summary) ? article.summary[0] : article.summary
-                    };
-                    externalPath = `/news/external-${btoa(encodeURIComponent(JSON.stringify(payload))).replace(/=/g, '')}`;
+                    externalPath = `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
                 } catch {
                     externalPath = `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
                 }
@@ -56,12 +51,7 @@ const ArticleModal: React.FC<Props> = ({ article, isOpen, onClose }) => {
 
                 let externalPath = '';
                 try {
-                    const payload = {
-                        u: article.url, t: article.title, i: article.imageUrl,
-                        s: article.source, c: article.category, d: article.publishedAt,
-                        m: Array.isArray(article.summary) ? article.summary[0] : article.summary
-                    };
-                    externalPath = `/news/external-${btoa(encodeURIComponent(JSON.stringify(payload))).replace(/=/g, '')}`;
+                    externalPath = `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
                 } catch {
                     externalPath = `/news/external-${btoa(article.url || '').replace(/=/g, '')}`;
                 }
