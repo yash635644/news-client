@@ -65,16 +65,8 @@ const NewsCard: React.FC<Props> = ({ news, featured = false, onClick }) => {
 
   const generateExternalPath = () => {
     try {
-      const payload = {
-        u: news.url,
-        t: news.title,
-        i: news.imageUrl,
-        s: news.source,
-        c: news.category,
-        m: Array.isArray(news.summary) ? news.summary[0] : news.summary,
-        d: news.publishedAt
-      };
-      return `/news/external-${btoa(encodeURIComponent(JSON.stringify(payload))).replace(/=/g, '')}`;
+      if (!news.url) return '/';
+      return `/news/external-${btoa(news.url).replace(/=/g, '')}`;
     } catch (e) {
       return `/news/external-${btoa(news.url || '').replace(/=/g, '')}`;
     }
