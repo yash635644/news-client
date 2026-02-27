@@ -265,6 +265,26 @@ export const api = {
   },
 
   /**
+   * Scrapes and summarizes an exact URL. Used for shared links.
+   */
+  searchExactUrl: async (url: string) => {
+    if (API_URL) {
+      try {
+        const response = await fetch(`${API_URL}/api/search-url`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+        if (!response.ok) throw new Error('Exact URL Search failed');
+        return await response.json();
+      } catch (error) {
+        throw error;
+      }
+    }
+    throw new Error('Backend not configured');
+  },
+
+  /**
    * Fetches the Live Article Feed.
    * Prioritizes Backend API, falls back to Client-Side RSS.
    */
