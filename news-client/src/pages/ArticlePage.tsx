@@ -82,7 +82,7 @@ const ArticlePage = () => {
 
                     // Try to fetch better details via AI search endpoint if possible
                     try {
-                        const result = await api.searchNews(decodedUrl);
+                        const result = await api.searchExactUrl(decodedUrl);
                         if (result.articles && result.articles.length > 0) {
                             const matched = result.articles[0];
                             // Clean up tags/source logic before setting
