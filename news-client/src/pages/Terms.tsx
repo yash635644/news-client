@@ -5,10 +5,10 @@ const Terms = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-8 md:p-12 border border-gray-100 dark:border-gray-700">
         <h1 className="text-3xl font-black font-serif text-gray-900 dark:text-white mb-8">Terms of Service</h1>
-        
+
         <div className="prose dark:prose-invert max-w-none text-gray-600 dark:text-gray-300">
           <p className="mb-4">Last Updated: {new Date().toLocaleDateString()}</p>
-          
+
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">1. Acceptance of Terms</h2>
           <p className="mb-4">
             By accessing and using Gathered, you accept and agree to be bound by the terms and provision of this agreement.
@@ -16,12 +16,12 @@ const Terms = () => {
 
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">2. Service Description</h2>
           <p className="mb-4">
-            Gathered is an automated news aggregator. We do not create original news content but aggregate headlines and summaries from publicly available RSS feeds.
+            Gathered is an AI-powered news curation and analysis platform. We use advanced artificial intelligence to synthesize, contextualize, and analyze global events, providing readers with unique insights based on publicly available reporting.
           </p>
 
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mt-8 mb-4">3. Intellectual Property</h2>
           <p className="mb-4">
-            All news headlines, summaries, and images displayed are the property of their respective publishers. We claim no ownership over the original articles. 
+            All news headlines, summaries, and images displayed are the property of their respective publishers. We claim no ownership over the original articles.
             Links are provided to the original source for full reading.
           </p>
 
