@@ -153,7 +153,7 @@ const Home = () => {
               source: item.source || 'Web Feed',
               url: item.link,
               publishedAt: item.pubDate || new Date().toISOString(),
-              author: 'Aggregator',
+              author: 'Gathered Desk',
               isBreaking: idx < 2 && currentPage === 1,
               isFeatured: idx < 5 && currentPage === 1,
               isAiGenerated: false
@@ -226,7 +226,7 @@ const Home = () => {
           source: item.source || 'Google Search',
           url: item.url,
           publishedAt: item.publishedAt || new Date().toISOString(),
-          author: 'Gemini AI',
+          author: 'Gathered AI Editor',
           isBreaking: false,
           isFeatured: false,
           isAiGenerated: true
