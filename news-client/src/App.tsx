@@ -19,6 +19,7 @@ const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const Disclaimer = lazy(() => import('./pages/Disclaimer'));
 const ArticlePage = lazy(() => import('./pages/ArticlePage'));
+const About = lazy(() => import('./pages/About'));
 
 // Fallback loader while downloading bundles
 const PageLoader = () => (
@@ -44,6 +45,7 @@ const App = () => {
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/disclaimer" element={<Disclaimer />} />
+                <Route path="/about" element={<About />} />
               </Routes>
             </Suspense>
           </main>
@@ -76,8 +78,9 @@ const App = () => {
 
               {/* Legal Links */}
               <div>
-                <h4 className="font-bold uppercase tracking-wider mb-4 text-gray-500 text-xs">Legal</h4>
+                <h4 className="font-bold uppercase tracking-wider mb-4 text-gray-500 text-xs">Legal & Info</h4>
                 <ul className="space-y-2 text-sm text-gray-300">
+                  <li><Link to="/about" className="hover:text-white transition-colors">About Us</Link></li>
                   <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
                   <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
                   <li><Link to="/disclaimer" className="hover:text-white transition-colors">Disclaimer</Link></li>
