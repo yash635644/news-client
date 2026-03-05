@@ -264,23 +264,24 @@ const ArticlePage = () => {
                         </div>
                     )}
 
-                    {id?.startsWith('external-') ? (
-                        <div className="bg-brand-50 dark:bg-brand-900/20 p-8 rounded-2xl border border-brand-200 dark:border-brand-800 text-center not-prose my-10">
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                                Continue Reading at {article.source}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300 mb-8 max-w-lg mx-auto">
-                                You are reading an AI-generated summary of a live news event. For full coverage, journalistic context, and media, please visit the original publisher.
-                            </p>
-                            <a
-                                href={article.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-500/20 transition-all active:scale-95"
-                            >
-                                Read Full Article on Source <ExternalLink size={20} />
-                            </a>
-                        </div>
+                    {id?.startsWith('external-') && article.content ? (
+                        <>
+                            <ReactMarkdown>{article.content}</ReactMarkdown>
+
+                            <div className="mt-12 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800 text-sm md:text-base flex flex-col md:flex-row items-center justify-between gap-4">
+                                <p className="text-gray-600 dark:text-gray-400">
+                                    <span className="font-bold">Source Material:</span> This analysis was generated based on reporting from <span className="font-bold text-gray-900 dark:text-gray-200">{article.source}</span>.
+                                </p>
+                                <a
+                                    href={article.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="whitespace-nowrap inline-flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-900 dark:text-white font-semibold rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 transition-colors"
+                                >
+                                    View Original Source <ExternalLink size={16} />
+                                </a>
+                            </div>
+                        </>
                     ) : (
                         <ReactMarkdown>{article.content || 'Content not available.'}</ReactMarkdown>
                     )}
